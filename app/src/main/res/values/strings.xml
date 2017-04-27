@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Info Quest</string>
+    <string name="intro_description"> Descoperă secretele \n locurilor în care te deplasezi</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="hint_username">Nr. Telefon/Adresa Email</string>
+    <string name="hint_password">Parola</string>
+    <string name="exit_game">Toate intrebarile la care ati raspuns inclusiv punctajul se vor pierde. Sunteti sigur ca doriti sa iesiti din joc ?</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+
+    <string-array name="nav_drawer_icons">
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_fiber_new</item>
+        <item>@drawable/ic_gamepad</item>
+        <item>@drawable/ic_score</item>
+        <item>@drawable/ic_action_paste</item>
+        <item>@drawable/ic_attach_money</item>
+        <item>@drawable/ic_action_exit</item>
+    </string-array>
+
+    <string-array name="nav_drawer_icons_active">
+        <item>@drawable/ic_home_active</item>
+        <item>@drawable/ic_fiber_new_active</item>
+        <item>@drawable/ic_attach_money_active</item>
+        <item>@drawable/ic_gamepad_active</item>
+        <item>@drawable/ic_score_active</item>
+        <item>@drawable/lock_icon_inactive</item>
+    </string-array>
+
+    <string-array name="nav_drawer_items">
+        <item>Acasa</item>
+        <item>Joc Nou</item>
+        <item>Joc Curent</item>
+        <item>Scor General</item>
+        <item>Scor Curent</item>
+        <item>Cumpara Monede</item>
+        <item>Iesire</item>
+    </string-array>
+
+    <string-array name="icon_list">
+        <item>@drawable/andrew_icon</item>
+        <item>@drawable/boy_icon</item>
+        <item>@drawable/emo_haircut_icon</item>
+        <item>@drawable/male_avatar_icon</item>
+    </string-array>
+
+
+</resources>

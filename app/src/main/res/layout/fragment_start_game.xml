@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".activity.StartGame">
+
+    <TextView
+        android:id="@+id/mainText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="35dp"
+        android:textAlignment="center"
+        android:textSize="45dp" />
+
+    <TextView
+        android:id="@+id/gameName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mainText"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="40dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="45dp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/edenImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mainText"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/rsz_edenland"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/newGame"
+        style="@style/textMenuButton"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/btn_login_bg"
+        android:text="Incepe Jocul" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/newGame">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:id="@+id/timeLimitTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|bottom"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="40dp"
+                    android:singleLine="false"
+                    android:text=" "
+                    android:textAlignment="center"
+                    android:textSize="30dp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="3">
+
+            <ImageView
+                android:id="@+id/coinsPicture"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/timeLimitTitle"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:paddingLeft="50dp"
+                android:src="@mipmap/coins" />
+
+            <TextView
+                android:id="@+id/coins"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:text="x"
+                android:textAlignment="center"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/cost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/timeLimitTitle"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:singleLine="false"
+                android:text="cost"
+                android:textAlignment="center"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>
+
