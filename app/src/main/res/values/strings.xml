@@ -2,6 +2,7 @@
     <string name="app_name">Info Quest</string>
     <string name="intro_description"> Descoperă secretele \n locurilor în care te deplasezi</string>
     <string name="btn_login">LOGIN</string>
+    <string name="btn_new_account">CONT NOU</string>
     <string name="btn_register">REGISTER</string>
     <string name="btn_link_to_register">Not a member? Sign up now.</string>
     <string name="btn_link_to_login">Already registred! Login Me.</string>
@@ -47,5 +48,15 @@
         <item>@drawable/male_avatar_icon</item>
     </string-array>
 
-
+    <string name="dialog_wait">Va rugam asteptati ...</string>
+    <string name="new_account_title">Creare cont nou</string>
+    <string name="hint_email_address">Exemplu: xyz@qaz.com</string>
+    <string name="insert_email_address">Introduceti Adresa Email</string>
+    <string name="password_insert_text">Introduceti Parola</string>
+    <string name="password_repeat_insert_text">Reintroduceti Parola</string>
+    <string name="hint_repeat_password">Reintroduceti parola</string>
+    <string name="hint_new_password">Introduceti parola</string>
+    <string name="auth_failed">Userul nu s-a putut crea !</string>
+    <string name="auth_success">Contul a fost creat cu success!</string>
+    auth_failed
 </resources>

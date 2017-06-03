@@ -27,11 +27,21 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'me.dm7.barcodescanner:zxing:1.8.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:recyclerview-v7:23.0.0'
-
+    compile 'com.google.firebase:firebase-auth:10.0.1'
+    compile 'com.google.firebase:firebase-config:10.0.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.google.firebase:firebase-crash:10.0.1'
+    testCompile 'junit:junit:4.12'
 }
+
+
+
+
+
+apply plugin: 'com.google.gms.google-services'

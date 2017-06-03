@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "826018463214",
+    "firebase_url": "https://info-quest.firebaseio.com",
+    "project_id": "info-quest",
+    "storage_bucket": "info-quest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826018463214:android:157eae1c2de0445c",
+        "android_client_info": {
+          "package_name": "com.sport.infoquest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826018463214-iv5cr6a0umtvm4bjc20f1jmrpg6tant8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sport.infoquest",
+            "certificate_hash": "c494c94ef4fecccb444f340d1cce8fcdfb464766"
+          }
+        },
+        {
+          "client_id": "826018463214-fnecn2ushgnli0h318uct3tbvm7va0nm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrryS4xyqxVdamJvTCFa8ofUAIFIBvLZk"
+        },
+        {
+          "current_key": "AIzaSyCFioU_xoXoqzHjJkL8I9X4Zdm3Vd5Xxlw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826018463214-fnecn2ushgnli0h318uct3tbvm7va0nm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

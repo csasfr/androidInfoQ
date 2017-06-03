@@ -89,6 +89,18 @@
         android:layout_alignEnd="@+id/frame_password"
         android:layout_alignStart="@+id/frame_password" />
 
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnNewAccount"
+        android:background="@color/btn_login_bg"
+        android:text="@string/btn_new_account"
+        android:textColor="@color/btn_login"
+        android:layout_below="@+id/btnLogin"
+        android:layout_marginTop="13dp"
+        android:layout_alignEnd="@+id/btnLogin"
+        android:layout_alignStart="@+id/btnLogin" />
+
     <ImageView
         android:layout_width="140dp"
         android:layout_height="140dp"

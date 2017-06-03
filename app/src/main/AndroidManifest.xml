@@ -15,10 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".view.activities.fragments.CreateAccountActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light">
-
         </activity>
         <activity
             android:name=".activity.MenuActivity"
@@ -50,7 +53,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.FBLoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar">
             <intent-filter>
