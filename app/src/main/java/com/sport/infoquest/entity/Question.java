@@ -6,18 +6,18 @@ import java.io.Serializable;
  * Created by Ionut on 18/10/2016.
  */
 public class Question implements Serializable {
-    private int id;
-    private String text;
+    private String id;
+    private String question;
     private String correctAnswer;
-    private String wrongAnswer;
+    private String otherAnswer;
     private String point;
 
     public String getText() {
-        return text;
+        return question;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setText(String question) {
+        this.question = question;
     }
 
     public String getCorrectAnswer() {
@@ -28,19 +28,19 @@ public class Question implements Serializable {
         this.correctAnswer = correctAnswer;
     }
 
-    public String getWrongAnswer() {
-        return wrongAnswer;
+    public String getOtherAnswer() {
+        return otherAnswer;
     }
 
-    public void setWrongAnswer(String wrongAnswer) {
-        this.wrongAnswer = wrongAnswer;
+    public void setOtherAnswer(String otherAnswer) {
+        this.otherAnswer = otherAnswer;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

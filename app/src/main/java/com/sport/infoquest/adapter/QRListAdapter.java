@@ -1,8 +1,6 @@
 package com.sport.infoquest.adapter;
 
 import android.content.Context;
-import android.graphics.Paint;
-import android.support.design.widget.CoordinatorLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,28 +9,25 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sport.infoquest.R;
-import com.sport.infoquest.entity.IdHint;
-import com.sport.infoquest.entity.User;
+import com.sport.infoquest.entity.Quests;
 import com.sport.infoquest.util.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by Ionut on 03/03/2017.
  */
 
-public class QRListAdapter extends ArrayAdapter<IdHint> implements View.OnClickListener, Serializable {
+public class QRListAdapter extends ArrayAdapter<Quests> implements View.OnClickListener, Serializable {
 
-    private List<IdHint> dataSet;
+    private List<Quests> dataSet;
     private List<String> marked = new ArrayList<>();
     public transient Context mContext;
-    CoordinatorLayout coordinatorLayout;
+
 
 
     // View lookup cache
@@ -42,7 +37,7 @@ public class QRListAdapter extends ArrayAdapter<IdHint> implements View.OnClickL
     }
 
 
-    public QRListAdapter(List<IdHint> data, Context context, List<String> marked) {
+    public QRListAdapter(List<Quests> data, Context context, List<String> marked) {
         super(context, R.layout.row_item_qr, data);
         this.dataSet = data;
         this.mContext = context;
@@ -55,7 +50,7 @@ public class QRListAdapter extends ArrayAdapter<IdHint> implements View.OnClickL
 
         int position = (Integer) v.getTag();
         Object object = getItem(position);
-        String dataModel = (String) object;
+       // String dataModel = (String) object;
 
         switch (v.getId()) {
             case R.id.item_info:
@@ -69,7 +64,7 @@ public class QRListAdapter extends ArrayAdapter<IdHint> implements View.OnClickL
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        IdHint dataModel = getItem(position);
+        Quests dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -94,16 +89,16 @@ public class QRListAdapter extends ArrayAdapter<IdHint> implements View.OnClickL
         Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.layout.up_from_botton : R.layout.down_from_top);
         result.startAnimation(animation);
         lastPosition = position;
-        if (!marked.isEmpty()) {
-            for (String mark : marked) {
-                if (dataModel.getId().equals(mark)) {
-                    //viewHolder.txtName.setText(dataModel.getHint());
-                    viewHolder.txtName.setPaintFlags(viewHolder.txtName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    break;
-                }
-            }
-        }
-        viewHolder.txtName.setText(dataModel.getHint());
+//        if (!marked.isEmpty()) {
+//            for (String mark : marked) {
+//                if (dataModel.getId().equals(mark)) {
+//                    //viewHolder.txtName.setText(dataModel.getHint());
+//                    viewHolder.txtName.setPaintFlags(viewHolder.txtName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+//                    break;
+//                }
+//            }
+//        }
+        viewHolder.txtName.setText(dataModel.getValue());
         viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);
         // Return the completed view to render on screen

@@ -18,10 +18,9 @@ import android.widget.Toast;
 
 import com.sport.infoquest.R;
 import com.sport.infoquest.activity.QR;
-import com.sport.infoquest.activity.ScanQR;
 import com.sport.infoquest.adapter.QRListAdapter;
 import com.sport.infoquest.entity.Game;
-import com.sport.infoquest.entity.IdHint;
+import com.sport.infoquest.entity.Quests;
 import com.sport.infoquest.entity.User;
 import com.sport.infoquest.util.Factory;
 import com.sport.infoquest.util.JSONResponse;
@@ -32,7 +31,7 @@ import com.sport.infoquest.util.Utils;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sport.infoquest.enums.Drawer.HOME;
@@ -54,7 +53,7 @@ public class ScanQRFragment extends Fragment {
     private Game currentGame;
 
     public static QRListAdapter adapter;
-    List<IdHint> dataIdHint;
+    List<Quests> questList;
     ListView listView;
 
     public ProgressDialog pDialog;
@@ -64,7 +63,7 @@ public class ScanQRFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootView = inflater.inflate(R.layout.frame_scanqr, container, false);
-        currentGame = User.getInstance().getCurrentGame();
+        currentGame = User.getInstance().getSelectedGame();
 
         Intent intent = getActivity().getIntent();
         questionId = (String) intent.getSerializableExtra("questionId");
@@ -79,13 +78,8 @@ public class ScanQRFragment extends Fragment {
             adapter = (QRListAdapter) savedInstanceState.getSerializable("QRAdapterList");
             listView.setAdapter(adapter);
         } else {
-            dataIdHint = currentGame.getIdHintList();
-            if (questionId != null && questionId != "") {
-                if (User.getInstance().getMarked() != null) {
-                    User.getInstance().getMarked().add(questionId);
-                }
-            }
-            adapter = new QRListAdapter(dataIdHint, getContext(), User.getInstance().getMarked());
+            questList = currentGame.getQuests();
+            adapter = new QRListAdapter(questList, getContext(),  new ArrayList<String>());
             listView.setAdapter(adapter);
         }
 

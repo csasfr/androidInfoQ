@@ -1,5 +1,16 @@
 package com.sport.infoquest.entity;
 
+import android.net.Uri;
+import android.util.Log;
+
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.util.JSONResponse;
 import com.sport.infoquest.util.RestService;
 import com.sport.infoquest.util.Utils;
@@ -10,13 +21,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Ionut on 21/10/2016.
  */
 public class User {
     private static User instance = null;
+    private String uid;
     private String username;
+    private String email;
     private String credit;
     private String currentTrack;
     private String currentScore;
@@ -26,11 +40,17 @@ public class User {
     private String scannedQuestions;
     private String totalQR;
     private String iconId;
+    private Uri photoUrl;
     private boolean isOnTrack;
     private Game currentGame;
     private Game selectedGame;
+    private ArrayList<Game> gameList = new ArrayList<>();
     private HashMap<String, String> codeTextHint;
     private List<String> marked = new ArrayList<>();
+    private DatabaseReference databaseReference;
+    private ChildEventListener childEventListener;
+    private Query queryRef;
+    public static final String TAG = "UserInstance";
 
     public static User getInstance() {
         if (instance == null) {
@@ -71,37 +91,6 @@ public class User {
         isOnTrack = onTrack;
     }
 
-    public boolean hasCredit(Game game) {
-        if (Integer.valueOf(credit) - Integer.valueOf(game.getCost()) > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean payCredit(Game game) {
-        JSONResponse response;
-
-        if (Integer.valueOf(credit) - Integer.valueOf(game.getCost()) > 0) {
-            credit = String.valueOf(Integer.valueOf(credit) - Integer.valueOf(game.getCost()));
-            try {
-                response = RestService.setTrack(this.getUsername(), String.valueOf(this.isOnTrack()), game.getName(), game.getCost());
-
-                if (Utils.checkStatusResponse(response)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            return false;
-        }
-        return false;
-    }
 
     public Game getCurrentGame() {
         return currentGame;
@@ -190,4 +179,39 @@ public class User {
     public String getIconId() {
         return iconId;
     }
+
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Uri getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(Uri photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public ArrayList<Game> getGameList() {
+        return gameList;
+    }
+
+    public void setGameList(ArrayList<Game> gameList) {
+        this.gameList = gameList;
+    }
+
+
 }

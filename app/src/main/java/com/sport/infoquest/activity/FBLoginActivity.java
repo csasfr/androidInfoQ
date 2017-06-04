@@ -13,11 +13,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.R;
-import com.sport.infoquest.util.FirebaseUtility;
+import com.sport.infoquest.entity.User;
+import com.sport.infoquest.util.Factory;
+import com.sport.infoquest.view.activities.HomeActivity;
 import com.sport.infoquest.view.activities.fragments.CreateAccountActivity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FBLoginActivity extends BaseActivity {
     private static final String TAG = "FBLoginActivity";
@@ -25,51 +34,58 @@ public class FBLoginActivity extends BaseActivity {
     private EditText usernameEditText, passwordEditText;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseUtility firebase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_redesign);
-        firebase = FirebaseUtility.getInstance();
-        firebase.initFirebase();
-        this.initRemoteConfiguration();
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
 
         Button login_button = (Button) findViewById(R.id.btnLogin);
         Button create_account = (Button) findViewById(R.id.btnNewAccount);
         usernameEditText = (EditText) findViewById(R.id.username);
         passwordEditText = (EditText) findViewById(R.id.password);
 
-        mAuth = firebase.getmAuth();
-        mAuthListener = firebase.getmAuthListener();
-
-        usernameText = usernameEditText.getText().toString().trim();
-        passwordText = passwordEditText.getText().toString().trim();
-
         login_button.setOnClickListener((new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showProgressDialog();
-                        mAuth.signInWithEmailAndPassword(usernameText, passwordText)
-                                .addOnCompleteListener(FBLoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+            @Override
+            public void onClick(View v) {
+                showProgressDialog();
+                usernameText = "csasfr@yahoo.com";//usernameEditText.getText().toString().trim();
+                passwordText = "1qaz2wsx";//passwordEditText.getText().toString().trim();
+                mAuth.signInWithEmailAndPassword(usernameText, passwordText)
+                        .addOnCompleteListener(FBLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                                    stopProgressDialog();
+                                    Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                                    startActivity(intent);
 
-                                        // If sign in fails, display a message to the user. If sign in succeeds
-                                        // the auth state listener will be notified and logic to handle the
-                                        // signed in user can be handled in the listener.
-                                        if (!task.isSuccessful()) {
-                                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                                            Toast.makeText(getApplicationContext(), R.string.auth_failed,
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-
-                                        // ...
-                                    }
-                                });
-                    }
-                }));
+                                } else {
+                                    Log.w(TAG, "signInWithEmail:failed", task.getException());
+                                    Toast.makeText(getApplicationContext(), R.string.auth_failed,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        }));
 
         create_account.setOnClickListener((new View.OnClickListener() {
             @Override
@@ -80,31 +96,7 @@ public class FBLoginActivity extends BaseActivity {
         }));
     }
 
-    private void initRemoteConfiguration() {
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
-        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_default);
-        long cacheExpiration = 3600; // 1 hour in seconds.
-
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }
-
-        mFirebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Fetch Succeeded");
-                            mFirebaseRemoteConfig.activateFetched();
-                            firebase.setmFirebaseRemoteConfig(mFirebaseRemoteConfig);
-                        } else {
-                            Log.d(TAG, "Fetch Failed");
-                        }
-                    }
-                });
-
-    }
 
     @Override
     protected void onStart() {

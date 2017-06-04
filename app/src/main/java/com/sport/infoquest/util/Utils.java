@@ -18,9 +18,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.R;
 import com.sport.infoquest.activity.QR;
-import com.sport.infoquest.activity.ScanQR;
 import com.sport.infoquest.activity.StartGame;
 import com.sport.infoquest.entity.Game;
 import com.sport.infoquest.entity.User;
@@ -31,11 +37,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by Ionut on 21/10/2016.
  */
 public class Utils {
+
     public static boolean isEntryValid(String username, String password) {
         return !username.isEmpty() && !password.isEmpty();
     }
@@ -84,9 +92,6 @@ public class Utils {
             if (response.getResponseCode() == StatusCode.ALREADY_EXISTS.getCode()) {
                 return false;
             }
-//            if (response.getResponseCode() == StatusCode.NOT_FOUND.getCode()) {
-//                return false;
-//            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,23 +116,6 @@ public class Utils {
         alert.show();
     }
 
-    public static  boolean isCurrentGame(Game selectedGame) {
-        JSONResponse response;
-        try {
-            response = RestService.postIsCurrentGame(User.getInstance().getUsername(), selectedGame.getName());
-            if (response.getResponseCode() == StatusCode.OK.getCode()) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public static void addFragment(Fragment fragment, String stackName, FragmentManager fragmentManager) {
         FragmentManager manager = fragmentManager;

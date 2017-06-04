@@ -1,5 +1,6 @@
 package com.sport.infoquest.view.activities;
 
+import android.app.ProgressDialog;
 import android.content.res.TypedArray;
 import android.support.v4.app.Fragment;
 import android.content.res.Configuration;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,18 +27,32 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.sport.infoquest.R;
+import com.sport.infoquest.activity.BaseActivity;
 import com.sport.infoquest.adapter.NavDrawerListAdapter;
 import com.sport.infoquest.entity.NavDrawerItem;
 import com.sport.infoquest.entity.User;
 import com.sport.infoquest.enums.Drawer;
+import com.sport.infoquest.util.Factory;
 import com.sport.infoquest.util.Utils;
 import com.sport.infoquest.view.activities.fragments.CurrentScoreFragment;
 import com.sport.infoquest.view.activities.fragments.HomeFragment;
 import com.sport.infoquest.view.activities.fragments.ScanQRFragment;
 import com.sport.infoquest.view.activities.fragments.SelectGameFragment;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.sport.infoquest.enums.Drawer.BUY_COINS;
 import static com.sport.infoquest.enums.Drawer.CURRENT_GAME;
@@ -51,9 +67,12 @@ import static com.sport.infoquest.enums.Drawer.SELECT_GAME;
  * Created by Ionut on 14/03/2017.
  */
 
-public class HomeActivity extends ActionBarActivity {
+public class HomeActivity extends AppCompatActivity {
 
     private static final String ACTIVITY = "HomeActivity";
+    private static final String TAG = "HomeActivity";
+    private static final String LOADING_MESSAGE_DIALOG = "loading_message";
+    private static final String TITLE_DIALOG = "title_dialog";
 
     private HomeFragment homeFragment;
     private Toolbar toolbar;
@@ -67,11 +86,17 @@ public class HomeActivity extends ActionBarActivity {
     private ActionBarDrawerToggle drawerToggle;
     private String[] navDrawerTitles;
 
-    public ImageView userPic;
-    public Bitmap image;
+    private ImageView userPic;
+    private TextView userName;
+    private Bitmap image;
 
     private int currentPosition;
     private LinearLayout linearLayout;
+    private FirebaseAuth mAuth;
+    private DatabaseReference databaseReference;
+    private Map<String, String> currentUser;
+    public ProgressDialog progressDialog;
+    public FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
@@ -82,12 +107,36 @@ public class HomeActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        showProgressDialog();
         setContentView(R.layout.activity_menu_new);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        String icId = User.getInstance().getIconId();
+        mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser fbUser = mAuth.getCurrentUser();
+
+        databaseReference.child("users").child(fbUser.getUid()).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        currentUser = (Map) dataSnapshot.getValue();
+                        updateUI(currentUser);
+                        stopProgressDialog();
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, "onCancelled", databaseError.toException());
+                        stopProgressDialog();
+                    }
+                });
+
+
         int iconId;
+        String icId=null;
         if (icId != null) {
             iconId = Integer.valueOf(icId);
         } else {
@@ -95,6 +144,7 @@ public class HomeActivity extends ActionBarActivity {
         }
         iconList = getResources().obtainTypedArray(R.array.icon_list);
         userPic = (ImageView) findViewById(R.id.selection_profile_pic);
+        userName = (TextView) findViewById(R.id.userFullName);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         Bitmap userIcon = BitmapFactory.decodeResource(getResources(), iconList.getResourceId(iconId, -1));
         image = Utils.getRoundedShape(userIcon, 100);
@@ -105,6 +155,7 @@ public class HomeActivity extends ActionBarActivity {
 
             }
         }));
+
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -155,10 +206,7 @@ public class HomeActivity extends ActionBarActivity {
                 invalidateOptionsMenu();
             }
         };
-        TextView userFullName = (TextView) findViewById(R.id.userFullName);
-        userFullName.setText(User.getInstance().getUsername());
 
-        //new DownloadImageTask().execute();
         drawerToggle.syncState();
         drawerLayout.openDrawer(Gravity.LEFT);
         drawerLayout.setDrawerListener(drawerToggle);
@@ -169,7 +217,6 @@ public class HomeActivity extends ActionBarActivity {
                     }
                 }
         );
-
         if (savedInstanceState == null) {
             // withholding the previously created fragment from being created again
             // On orientation change, it will prevent fragment recreation
@@ -181,8 +228,18 @@ public class HomeActivity extends ActionBarActivity {
             // and getting the reference
             homeFragment = (HomeFragment) getSupportFragmentManager().getFragments().get(HOME.getPosition());
         }
+
     }
 
+    private void updateUI(final Map<String, String> currentUser) {
+
+        for (Map.Entry<String, String> entry:currentUser.entrySet()){
+            if (entry.getKey().contains("username")){
+                userName.setText(entry.getValue());
+                return;
+            }
+        }
+    }
 
     private void initScreen() {
         homeFragment = new HomeFragment();
@@ -198,6 +255,7 @@ public class HomeActivity extends ActionBarActivity {
                 setMenuPositionAndColor(position);
                 break;
             case 1:
+                Log.d(TAG, " -> SelectGameFragment is selected ...");
                 fragment = new SelectGameFragment();
                 addFragment(fragment, SELECT_GAME.getName());
                 break;
@@ -335,4 +393,22 @@ public class HomeActivity extends ActionBarActivity {
             // do not call super
         }
     }
+
+    public void showProgressDialog(){
+        this.initProgressDialog();
+        progressDialog.show();
+    }
+
+    public void stopProgressDialog(){
+        progressDialog.dismiss();
+    }
+
+    public void initProgressDialog(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMax(100);
+        progressDialog.setMessage(mFirebaseRemoteConfig.getString(LOADING_MESSAGE_DIALOG));
+        progressDialog.setTitle(mFirebaseRemoteConfig.getString(TITLE_DIALOG));
+
+    }
+
 }

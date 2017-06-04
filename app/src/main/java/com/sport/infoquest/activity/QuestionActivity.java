@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.app.AlertDialog;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -16,7 +15,6 @@ import com.sport.infoquest.entity.Question;
 import com.sport.infoquest.entity.User;
 import com.sport.infoquest.util.JSONResponse;
 import com.sport.infoquest.util.RestService;
-import com.sport.infoquest.util.Status;
 import com.sport.infoquest.util.StatusCode;
 import com.sport.infoquest.util.Utils;
 
@@ -53,7 +51,7 @@ public class QuestionActivity extends Activity {
         radioList.add(Rb4);
         Collections.shuffle(radioList);
 
-        String[] wrongAnswer = question.getWrongAnswer().split(",");
+        String[] wrongAnswer = question.getOtherAnswer().split(",");
         questionText.setText(question.getText());
         questionPoint.setText(questionPoint.getText().toString().replace("x", question.getPoint()));
 
@@ -79,12 +77,12 @@ public class QuestionActivity extends Activity {
                     builder.setCancelable(false);
                     builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                            i.putExtra("questionId", String.valueOf(question.getId()));
+                      //      Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                          //  i.putExtra("questionId", String.valueOf(question.getId()));
                             if (response.getResponseCode() == StatusCode.GONE.getCode()) {
-                                i.putExtra("finishGame", "true");
+                          //      i.putExtra("finishGame", "true");
                             }
-                            startActivity(i);
+                          //  startActivity(i);
                             finish();
                         }
                     });
@@ -98,8 +96,8 @@ public class QuestionActivity extends Activity {
                     builder.setCancelable(false);
                     builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                            startActivity(i);
+                           // Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                         //   startActivity(i);
                             finish();
                         }
                     });
@@ -124,12 +122,12 @@ public class QuestionActivity extends Activity {
                 builder.setCancelable(false);
                 builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                        i.putExtra("questionId", String.valueOf(question.getId()));
+                       // Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                      //  i.putExtra("questionId", String.valueOf(question.getId()));
                         if (response.getResponseCode() == StatusCode.GONE.getCode()) {
-                            i.putExtra("finishGame", "true");
+                      //      i.putExtra("finishGame", "true");
                         }
-                        startActivity(i);
+                        //startActivity(i);
                         finish();
                     }
                 });
@@ -154,12 +152,12 @@ public class QuestionActivity extends Activity {
                 builder.setCancelable(false);
                 builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                        i.putExtra("questionId", String.valueOf(question.getId()));
+                      //  Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                       // i.putExtra("questionId", String.valueOf(question.getId()));
                         if (response.getResponseCode() == StatusCode.GONE.getCode()) {
-                            i.putExtra("finishGame", "true");
+                     //       i.putExtra("finishGame", "true");
                         }
-                        startActivity(i);
+                       // startActivity(i);
                         finish();
                     }
                 });
@@ -184,12 +182,12 @@ public class QuestionActivity extends Activity {
                 builder.setCancelable(false);
                 builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                        i.putExtra("questionId", String.valueOf(question.getId()));
+                       // Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                     //   i.putExtra("questionId", String.valueOf(question.getId()));
                         if (response.getResponseCode() == StatusCode.GONE.getCode()) {
-                            i.putExtra("finishGame", "true");
+                     //       i.putExtra("finishGame", "true");
                         }
-                        startActivity(i);
+                       // startActivity(i);
                         finish();
                     }
                 });

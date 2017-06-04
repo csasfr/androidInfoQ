@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,9 +32,8 @@ public class BaseActivity extends Activity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseUtility fireBase = FirebaseUtility.getInstance();
         progressDialog = new ProgressDialog(this);
-        mFirebaseRemoteConfig = fireBase.getmFirebaseRemoteConfig();
+        initRemoteConfiguration();
         Log.d(TAG, "-> onCreate");
     }
 
@@ -47,10 +47,34 @@ public class BaseActivity extends Activity{
     }
 
     public void initProgressDialog(){
-        mFirebaseRemoteConfig = FirebaseUtility.getInstance().getmFirebaseRemoteConfig();
         progressDialog.setMax(100);
         progressDialog.setMessage(mFirebaseRemoteConfig.getString(LOADING_MESSAGE_DIALOG));
         progressDialog.setTitle(mFirebaseRemoteConfig.getString(TITLE_DIALOG));
+
+    }
+
+    private void initRemoteConfiguration() {
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_default);
+        long cacheExpiration = 3600; // 1 hour in seconds.
+
+        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+            cacheExpiration = 0;
+        }
+
+        mFirebaseRemoteConfig.fetch(cacheExpiration)
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Fetch Succeeded");
+                            mFirebaseRemoteConfig.activateFetched();
+                        } else {
+                            Log.d(TAG, "Fetch Failed");
+                        }
+                    }
+                });
 
     }
 

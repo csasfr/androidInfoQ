@@ -7,31 +7,26 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.sport.infoquest.R;
 import com.sport.infoquest.entity.Question;
-import com.sport.infoquest.entity.User;
-import com.sport.infoquest.util.Factory;
-import com.sport.infoquest.util.JSONResponse;
-import com.sport.infoquest.util.RestService;
-import com.sport.infoquest.util.StatusCode;
-import com.sport.infoquest.util.Utils;
-
-import org.json.JSONException;
-
-import java.io.IOException;
+import java.util.ArrayList;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class QR extends Activity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView mScannerView;
-    private RestService restService;
+    private static final String TAG = "QR";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        restService = new RestService();
         setContentView(R.layout.activity_qr);
         mScannerView = (ZXingScannerView) findViewById(R.id.scanner_view);
         mScannerView.startCamera(); //error on this line
@@ -53,39 +48,63 @@ public class QR extends Activity implements ZXingScannerView.ResultHandler {
 //    }
 
     @Override
-    public void handleResult(Result rawResult) {
-        // Do something with the result here
-        try {
-            JSONResponse response = RestService.postQuestionById(User.getInstance().getUsername(), rawResult.getText());
-            if (response.getStatusCode().equals(StatusCode.NOT_FOUND)) {
-                Toast.makeText(this.getApplicationContext(), "Cod invalid !",
-                        Toast.LENGTH_LONG).show();
-                mScannerView.resumeCameraPreview(this);
-            } else {
-                JSONResponse responseQ = RestService.getQuestionById(rawResult.getText());
-                Question question = Factory.createQuestionObject(responseQ);
-                Log.w(QR.class.getName(), "checking question id " + String.valueOf(question.getId()));
-                if (!Utils.checkIfAlreadyScan(String.valueOf(question.getId()))) {
-                    Toast.makeText(this.getApplicationContext(), "Aceasta intrebare a mai fost scanata !",
-                            Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                    startActivity(i);
-                } else {
-                    Log.e("handler", rawResult.getText()); // Prints scan results
-                    Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
-                    Intent i = new Intent(this, QuestionActivity.class);
-                    i.putExtra("questionObject", question);
-                    startActivity(i);
-                    finish();
-                }
-            }
+    public void handleResult(final Result rawResult) {
+            final String questId = rawResult.getText();
+            FirebaseDatabase.getInstance().getReference().child("questions")
+                    .addListenerForSingleValueEvent(
+                            new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    GenericTypeIndicator<ArrayList<Question>> genericType = new GenericTypeIndicator<ArrayList<Question>>() {};
+                                    ArrayList<Question> questionList = dataSnapshot.getValue(genericType);
+                                    boolean isCorrectScanned = false;
+                                    Question scannedQuestion = new Question();
+                                    for (Question question:questionList){
+                                        if (question.getId().equals(questId)){
+                                            isCorrectScanned = true;
+                                            scannedQuestion = question;
+                                        }
+                                    }
+                                    if (isCorrectScanned){
+                                        goToQuestionActivity(rawResult, scannedQuestion);
+                                    } else {
+//                                        scannedQuestion
+//                                        JSONResponse responseQ = RestService.getQuestionById(rawResult.getText());
+//                                        Question question = Factory.createQuestionObject(responseQ);
+//                                        Log.w(QR.class.getName(), "checking question id " + String.valueOf(question.getId()));
+//                                        if (!Utils.checkIfAlreadyScan(String.valueOf(question.getId()))) {
+//                                            Toast.makeText(this.getApplicationContext(), "Aceasta intrebare a mai fost scanata !",
+//                                                    Toast.LENGTH_LONG).show();
+//                                            //   Intent i = new Intent(getApplicationContext(), ScanQR.class);
+//                                            //  startActivity(i);
+//                                        } else {
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+                                        Toast.makeText(getApplicationContext(), "Cod invalid !",
+                                                Toast.LENGTH_LONG).show();
+                                        resumeCamera();
+                                        }
+                                    }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.e(TAG, "onCancelled", databaseError.toException());
+                                    //stopProgressDialog();
+                                }
+    });
         }
+    private void goToQuestionActivity(Result rawResult, Question scannedQuestion) {
+        Log.e("handler", rawResult.getText()); // Prints scan results
+        Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
+        Intent i = new Intent(this, QuestionActivity.class);
+        i.putExtra("questionObject", scannedQuestion);
+        startActivity(i);
+        finish();
+        }
+
+    private void resumeCamera() {
+        mScannerView.resumeCameraPreview(this);
     }
+
 
     @Override
     public void onBackPressed() {

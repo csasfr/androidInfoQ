@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sport.infoquest.R;
 import com.sport.infoquest.activity.BaseActivity;
+import com.sport.infoquest.entity.User;
+import com.sport.infoquest.util.Factory;
 import com.sport.infoquest.util.FirebaseUtility;
 
 /**
@@ -81,12 +83,13 @@ public class CreateAccountActivity extends BaseActivity{
                         // signed in user can be handled in the listener.
                         if (task.isSuccessful()) {
                             Log.d(TAG, " -> User successfully created");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser fbUser = mAuth.getCurrentUser();
+                            User user = Factory.createUser(fbUser);
                             databaseReference.child("users").child(user.getUid()).setValue(user);
                         } else {
 
                             Log.d(TAG, " -> User couldn't be created");
-                            Toast.makeText(CreateAccountActivity.this, R.string.auth_success,
+                            Toast.makeText(CreateAccountActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
 
                         }

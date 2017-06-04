@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+@Deprecated
 public class SelectGameActivity extends Activity {
     public RestService restService;
     public JSONArray allGames;
@@ -50,11 +50,7 @@ public class SelectGameActivity extends Activity {
         dataModels = new ArrayList<>();
         listView = (ListView) findViewById(R.id.gameList);
         if (ListOfGames.getInstance().getGames() == null) {
-            try {
-                Factory.createGame(RestService.getAllGames());
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
-            }
+
         } else {
             for (Game game : ListOfGames.getInstance().getGames().values()) {
                 dataModels.add(game);
@@ -71,8 +67,8 @@ public class SelectGameActivity extends Activity {
                         User.getInstance().setCurrentGame(dataModels.get(position));
                         User.getInstance().setMarked(new ArrayList<String>(Arrays.asList(User.getInstance().getScannedQuestions().split(","))));
 
-                        Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                        startActivity(i);
+                       // Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                       // startActivity(i);
                         finish();
                     } else {
                         User.getInstance().setSelectedGame(dataModels.get(position));

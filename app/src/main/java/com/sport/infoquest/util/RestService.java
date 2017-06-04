@@ -29,7 +29,7 @@ public class RestService {
     private static final String GET_QUESTIONS = "/user/checkQuestion/";
     private static final String SET_TRACK = "/user/setChangeOnTrack/";
     private static final String SET_CORRECT_ANSWER = "/user/setCorrectAnswer/";
-    private static final String SET_WRONG_ANSWER = "/user/setWrongAnswer/";
+    private static final String SET_WRONG_ANSWER = "/user/setOtherAnswer/";
 
     private static final String POST_QUESTION_BY_ID = "/user/checkQuestionId/";
     private static final String POST_START_GAME_WITH_CHECK_CREDIT = "/user/setCurrentGame/";

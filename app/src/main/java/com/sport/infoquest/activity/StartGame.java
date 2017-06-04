@@ -58,7 +58,7 @@ public class StartGame extends Activity {
 
         gameName.setText(User.getInstance().getSelectedGame().getName());
         //minutes.setText(User.getInstance().getSelectedGame().getTime());
-        coins.setText(User.getInstance().getSelectedGame().getCost());
+        coins.setText("");
         Button newGame = (Button) findViewById(R.id.newGame);
         newGame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -66,8 +66,8 @@ public class StartGame extends Activity {
                 String userName = User.getInstance().getUsername();
                 if (checkCredit(userName, gameName)) {
                     this.setCurrentGame();
-                    Intent i = new Intent(getApplicationContext(), ScanQR.class);
-                    startActivity(i);
+                   // Intent i = new Intent(getApplicationContext(), ScanQR.class);
+                   // startActivity(i);
                     finish();
                 } else {
                     Utils.showMessage(getApplicationContext(), "Credit insuficient pentru joc!");

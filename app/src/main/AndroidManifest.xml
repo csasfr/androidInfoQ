@@ -24,10 +24,6 @@
             android:theme="@style/Theme.AppCompat.Light">
         </activity>
         <activity
-            android:name=".activity.MenuActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
-        <activity
             android:name=".activity.SelectGameActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
