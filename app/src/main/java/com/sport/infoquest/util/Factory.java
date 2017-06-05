@@ -77,7 +77,7 @@ public class Factory {
 //                        game.setHintAndId(object.getString("hintAndId"));
 //                    }
 //                    game.createHashMapOfHintsAndID();
-//                    listOfGames.getGames().put(game.getId(), game);
+//                    listOfGames.getFinishedGames().put(game.getId(), game);
 //                }
 //            }
 //        } catch (JSONException e) {
@@ -91,8 +91,6 @@ public class Factory {
         newUser.setEmail(fbUser.getEmail());
         newUser.setPhotoUrl(fbUser.getPhotoUrl());
         newUser.setCredit("0");
-        newUser.setCurrentScore("0");
-        newUser.setCurrentTrack("");
         if  (fbUser.getDisplayName() == null){
             newUser.setUsername(fbUser.getEmail().contains("@")  ? fbUser.getEmail().split("@")[0] : fbUser.getEmail());
         } else {

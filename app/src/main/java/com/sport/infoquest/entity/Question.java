@@ -7,17 +7,17 @@ import java.io.Serializable;
  */
 public class Question implements Serializable {
     private String id;
-    private String question;
+    private String text;
     private String correctAnswer;
     private String otherAnswer;
     private String point;
 
     public String getText() {
-        return question;
+        return text;
     }
 
     public void setText(String question) {
-        this.question = question;
+        this.text = question;
     }
 
     public String getCorrectAnswer() {

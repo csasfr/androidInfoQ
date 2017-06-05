@@ -33,11 +33,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.sport.infoquest.R;
 import com.sport.infoquest.activity.BaseActivity;
 import com.sport.infoquest.adapter.NavDrawerListAdapter;
+import com.sport.infoquest.entity.CurrentScore;
+import com.sport.infoquest.entity.CurrentUser;
+import com.sport.infoquest.entity.Game;
 import com.sport.infoquest.entity.NavDrawerItem;
 import com.sport.infoquest.entity.User;
 import com.sport.infoquest.enums.Drawer;
@@ -47,6 +51,7 @@ import com.sport.infoquest.view.activities.fragments.CurrentScoreFragment;
 import com.sport.infoquest.view.activities.fragments.HomeFragment;
 import com.sport.infoquest.view.activities.fragments.ScanQRFragment;
 import com.sport.infoquest.view.activities.fragments.SelectGameFragment;
+import com.sport.infoquest.view.activities.fragments.StartGameFragment;
 
 import org.w3c.dom.Text;
 
@@ -62,6 +67,7 @@ import static com.sport.infoquest.enums.Drawer.HOME;
 import static com.sport.infoquest.enums.Drawer.LOGOUT;
 import static com.sport.infoquest.enums.Drawer.SCAN_QR;
 import static com.sport.infoquest.enums.Drawer.SELECT_GAME;
+import static com.sport.infoquest.enums.Drawer.START_GAME;
 
 /**
  * Created by Ionut on 14/03/2017.
@@ -260,18 +266,20 @@ public class HomeActivity extends AppCompatActivity {
                 addFragment(fragment, SELECT_GAME.getName());
                 break;
             case 2:
-                if (User.getInstance().getCurrentGame() != null) {
+                checkIfIsPendingGame();
+                if (User.getInstance().getSelectedGame() != null && User.getInstance().isOnTrack()) {
                     fragment = new ScanQRFragment();
                     replaceFragment(fragment, SCAN_QR.getName());
                 } else {
                     Toast.makeText(HomeActivity.this, "Nu aveti un joc in desfasurare!", Toast.LENGTH_LONG);
                 }
+                setMenuPositionAndColor(position);
                 break;
             case 3: //implement logout from App
-                finish();
+                //finish();
                 break;
             case 4: //implement logout from App
-                if (User.getInstance().getCurrentGame() != null) {
+                if (User.getInstance().getSelectedGame() != null && User.getInstance().isOnTrack()) {
                     fragment = new CurrentScoreFragment();
                     replaceFragmentIfExist(fragment, CURRENT_SCORE.getName());
                 } else {
@@ -293,6 +301,48 @@ public class HomeActivity extends AppCompatActivity {
             Log.i(ACTIVITY, "Fragment was null!");
         }
     }
+
+    private void checkIfIsPendingGame() {
+        databaseReference.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        DataSnapshot usersSnapshot = dataSnapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        DataSnapshot gamesnapshot = dataSnapshot.child("games");
+                        CurrentScore currentScore = new CurrentScore();
+                        GenericTypeIndicator<CurrentUser> genericTypeUser = new GenericTypeIndicator<CurrentUser>() {};
+                        CurrentUser currentUser = usersSnapshot.getValue(genericTypeUser);
+
+                        if (currentUser.isOnTrack()){
+                            DataSnapshot scoreSnapshot = dataSnapshot.child("scores").child("currentScore").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            GenericTypeIndicator<CurrentScore> genericTypeScore = new GenericTypeIndicator<CurrentScore>() {};
+                            currentScore = scoreSnapshot.getValue(genericTypeScore);
+
+                            User.getInstance().setCurrentTrack(currentScore.getTrack());
+                            GenericTypeIndicator<ArrayList<Game>> genericType = new GenericTypeIndicator<ArrayList<Game>>() {};
+                            ArrayList<Game> gamesList = gamesnapshot.getValue(genericType);
+                            for (Game game : gamesList){
+                                if (game.getName().equals(currentScore.getTrack())){
+                                    User.getInstance().setSelectedGame(game);
+                                }
+                            }
+                            User.getInstance().setOnTrack(true);
+                            Fragment fragment = new ScanQRFragment();
+                            Utils.addFragment(fragment, SCAN_QR.getName(), getSupportFragmentManager());
+
+                        }
+                        stopProgressDialog();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, "onCancelled", databaseError.toException());
+                        stopProgressDialog();
+                    }
+                });
+
+    }
+
 
     private void addFragment(Fragment fragment, String stackName) {
         FragmentManager manager = getSupportFragmentManager();

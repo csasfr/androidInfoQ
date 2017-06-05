@@ -32,7 +32,9 @@ public class BaseFragment extends Fragment {
     }
 
     public void stopProgressDialog(){
-        progressDialog.dismiss();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     public void initProgressDialog(){

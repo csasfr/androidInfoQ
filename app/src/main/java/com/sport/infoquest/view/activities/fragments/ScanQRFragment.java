@@ -43,7 +43,7 @@ import static com.sport.infoquest.enums.Drawer.SCAN_QR;
 
 public class ScanQRFragment extends Fragment {
 
-    private static final String FRAGMENT = "ScanQRFragment";
+    private static final String TAG = "ScanQRFragment";
     private View rootView;
     private Button qrButton;
     private Button checkScore;

@@ -22,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.R;
 import com.sport.infoquest.activity.BaseFragment;
 import com.sport.infoquest.adapter.CustomAdapter;
+import com.sport.infoquest.entity.CurrentScore;
+import com.sport.infoquest.entity.CurrentUser;
 import com.sport.infoquest.entity.Game;
 import com.sport.infoquest.entity.ListOfGames;
 import com.sport.infoquest.entity.User;
@@ -115,27 +117,33 @@ public class SelectGameFragment extends BaseFragment {
 
                 private void processSelectedGame(final Game selectedGame) {
                     showProgressDialog();
-                    databaseReference.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(
+
+                    databaseReference.addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    currentUser = (Map) dataSnapshot.getValue();
+                                    DataSnapshot usersSnapshot = dataSnapshot.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                    CurrentScore currentScore = new CurrentScore();
+                                    GenericTypeIndicator<CurrentUser> genericTypeUser = new GenericTypeIndicator<CurrentUser>() {};
+                                    CurrentUser currentUser = usersSnapshot.getValue(genericTypeUser);
+
                                     boolean isCurrentGame = false;
-                                    for (Map.Entry<String, String> entry:currentUser.entrySet()){
-                                        if (entry.getKey().contains("currentTrack")){
-                                            if(entry.getValue().equals(selectedGame.getName())){
-                                                isCurrentGame = true;
-                                            }
+                                    if (currentUser.isOnTrack()){
+                                        DataSnapshot scoreSnapshot = dataSnapshot.child("scores").child("currentScore").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                        GenericTypeIndicator<CurrentScore> genericTypeScore = new GenericTypeIndicator<CurrentScore>() {};
+                                        currentScore = scoreSnapshot.getValue(genericTypeScore);
+
+                                        if(currentScore.getTrack().equals(selectedGame.getName())){
+                                            isCurrentGame = true;
                                         }
                                     }
+                                    User.getInstance().setCurrentTrack(selectedGame.getName());
+                                    User.getInstance().setSelectedGame(selectedGame);
+
                                     if (isCurrentGame){
-                                        User.getInstance().setCurrentTrack(selectedGame.getName());
-                                        User.getInstance().setSelectedGame(selectedGame);
                                         Fragment fragment = new ScanQRFragment();
                                         Utils.addFragment(fragment, SCAN_QR.getName(), getFragmentManager());
                                     } else {
-                                        User.getInstance().setCurrentTrack(selectedGame.getName());
-                                        User.getInstance().setSelectedGame(selectedGame);
                                         Fragment fragment = new StartGameFragment();
                                         Utils.addFragment(fragment, START_GAME.getName(), getFragmentManager());
                                     }
@@ -148,6 +156,7 @@ public class SelectGameFragment extends BaseFragment {
                                     stopProgressDialog();
                                 }
                             });
+
                 }
             });
         }
