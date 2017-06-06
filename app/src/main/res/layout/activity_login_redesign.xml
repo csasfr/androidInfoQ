@@ -101,6 +101,15 @@
         android:layout_alignEnd="@+id/btnLogin"
         android:layout_alignStart="@+id/btnLogin" />
 
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="43dp"
+        android:layout_below="@+id/frame_password"
+        android:layout_centerHorizontal="true" />
+
     <ImageView
         android:layout_width="140dp"
         android:layout_height="140dp"

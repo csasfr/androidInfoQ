@@ -58,5 +58,10 @@
     <string name="hint_new_password">Introduceti parola</string>
     <string name="auth_failed">Userul nu s-a putut crea !</string>
     <string name="auth_success">Contul a fost creat cu success!</string>
-    auth_failed
+    <string name="sign_up_email_error">Introduceti o adresa de mail valida</string>
+    <string name="sign_up_password_error">intre 6 si 10 caractere</string>
+    <string name="sign_up_repeat_password_error">Parola nu coincide !</string>
+    <string name="facebook_app_id">1150940248385908</string>
+    <string name="fb_login_protocol_scheme">fb1150940248385908</string>
+
 </resources>

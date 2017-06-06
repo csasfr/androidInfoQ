@@ -1,5 +1,7 @@
 package com.sport.infoquest.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,24 +11,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.R;
-import com.sport.infoquest.entity.User;
-import com.sport.infoquest.util.Factory;
 import com.sport.infoquest.view.activities.HomeActivity;
 import com.sport.infoquest.view.activities.fragments.CreateAccountActivity;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 public class FBLoginActivity extends BaseActivity {
     private static final String TAG = "FBLoginActivity";
@@ -34,7 +36,7 @@ public class FBLoginActivity extends BaseActivity {
     private EditText usernameEditText, passwordEditText;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +76,30 @@ public class FBLoginActivity extends BaseActivity {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                                     stopProgressDialog();
-                                    Intent intent = new Intent(getBaseContext(), HomeActivity.class);
-                                    startActivity(intent);
+                                    final FirebaseUser fbUser = mAuth.getCurrentUser();
+                                    if (fbUser.isEmailVerified()) {
+                                        Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                                        startActivity(intent);
+                                    } else {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(FBLoginActivity.this);
+                                        builder.setTitle("Notificare");
+                                        builder.setMessage("Contul nu s-a activat. Doriti retrimiterea notificarii de confirmare ?");
+                                        builder.setCancelable(true);
+                                        builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                fbUser.sendEmailVerification();
+                                            }
+                                        });
+                                        AlertDialog alert = builder.create();
+                                        alert.show();
+                                    }
 
                                 } else {
-                                    Log.w(TAG, "signInWithEmail:failed", task.getException());
+                                    Log.d(TAG, "signInWithEmail:failed" + " " + task.getException().getMessage(), task.getException());
                                     Toast.makeText(getApplicationContext(), R.string.auth_failed,
                                             Toast.LENGTH_SHORT).show();
                                 }
+                                stopProgressDialog();
                             }
                         });
             }
@@ -94,14 +112,47 @@ public class FBLoginActivity extends BaseActivity {
                 startActivity(intent);
             }
         }));
+
+        LoginButton facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
+        facebookLoginButton.setReadPermissions("email", "public_profile");
+
+        callbackManager = CallbackManager.Factory.create();
+        facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                Toast.makeText(getApplicationContext(), "FB cu success !",
+                        Toast.LENGTH_SHORT).show();
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        // Pass the activity result back to the Facebook SDK
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
     }
 
     @Override
@@ -110,6 +161,33 @@ public class FBLoginActivity extends BaseActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(FBLoginActivity.this, "Authentication success." + user.getUid(),
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(FBLoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
     }
 
 }

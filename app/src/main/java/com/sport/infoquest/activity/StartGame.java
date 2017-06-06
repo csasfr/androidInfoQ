@@ -25,7 +25,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import static android.support.v7.widget.StaggeredGridLayoutManager.TAG;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.sport.infoquest.util.GameName.EDENLAND;
