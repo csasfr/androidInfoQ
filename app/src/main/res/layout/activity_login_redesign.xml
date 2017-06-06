@@ -81,7 +81,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnLogin"
-        android:background="@color/btn_login_bg"
+        android:background="@drawable/button_pressed"
         android:text="@string/btn_login"
         android:textColor="@color/btn_login"
         android:layout_below="@+id/frame_password"
@@ -93,7 +93,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnNewAccount"
-        android:background="@color/btn_login_bg"
+        android:background="@drawable/button_pressed"
         android:text="@string/btn_new_account"
         android:textColor="@color/btn_login"
         android:layout_below="@+id/btnLogin"
@@ -108,7 +108,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="43dp"
         android:layout_below="@+id/frame_password"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignEnd="@+id/btnLogin"
+        android:layout_alignStart="@+id/btnLogin" />
 
     <ImageView
         android:layout_width="140dp"

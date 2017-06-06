@@ -3,6 +3,7 @@ package com.sport.infoquest.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -24,7 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sport.infoquest.R;
 import com.sport.infoquest.entity.User;
 import com.sport.infoquest.util.Factory;
@@ -39,7 +44,7 @@ public class FBLoginActivity extends BaseActivity {
     private EditText usernameEditText, passwordEditText;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-private CallbackManager callbackManager;
+    private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +75,8 @@ private CallbackManager callbackManager;
             @Override
             public void onClick(View v) {
                 showProgressDialog();
-                usernameText = "csasfr@yahoo.com";//usernameEditText.getText().toString().trim();
-                passwordText = "1qaz2wsx";//passwordEditText.getText().toString().trim();
+                usernameText = usernameEditText.getText().toString().trim();
+                passwordText = passwordEditText.getText().toString().trim();
                 mAuth.signInWithEmailAndPassword(usernameText, passwordText)
                         .addOnCompleteListener(FBLoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -87,8 +92,9 @@ private CallbackManager callbackManager;
                                         AlertDialog.Builder builder = new AlertDialog.Builder(FBLoginActivity.this);
                                         builder.setTitle("Notificare");
                                         builder.setMessage("Contul nu s-a activat. Doriti retrimiterea notificarii de confirmare ?");
-                                        builder.setCancelable(true);
-                                        builder.setPositiveButton("Scaneaza urmatorul cod", new DialogInterface.OnClickListener() {
+                                        builder.setCancelable(false);
+                                        builder.setNegativeButton("Anuleaza", null);
+                                        builder.setPositiveButton("Trimite", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 fbUser.sendEmailVerification();
                                             }
@@ -126,7 +132,31 @@ private CallbackManager callbackManager;
 
                 Toast.makeText(getApplicationContext(), "FB cu success !",
                         Toast.LENGTH_SHORT).show();
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                FirebaseUser fbUser = mAuth.getCurrentUser();
+                String facebookUserId = "";
+               // fbUser.getProviderData().get().getUid()
+
+                String photoUrl = "https://graph.facebook.com/" + fbUser.getProviderData().get(1).getUid()+ "/picture?height=20";
+
+                final User user = Factory.createUser(fbUser);
+                user.setPhotoUrl(Uri.parse(photoUrl));
+                FirebaseDatabase.getInstance().getReference().child("users").addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                DataSnapshot userSnapShot = dataSnapshot.child(user.getUid());
+                                if (userSnapShot.exists()){
+                                    Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                                    startActivity(intent);
+                                } else {
+                                    FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }});
             }
 
             @Override
