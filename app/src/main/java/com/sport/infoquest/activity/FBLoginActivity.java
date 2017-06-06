@@ -24,7 +24,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sport.infoquest.R;
+import com.sport.infoquest.entity.User;
+import com.sport.infoquest.util.Factory;
 import com.sport.infoquest.view.activities.HomeActivity;
 import com.sport.infoquest.view.activities.fragments.CreateAccountActivity;
 import com.facebook.FacebookSdk;
@@ -174,7 +177,11 @@ private CallbackManager callbackManager;
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser fbUser = mAuth.getCurrentUser();
+                            User user = Factory.createUser(fbUser);
+                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
+                            Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                            startActivity(intent);
                             Toast.makeText(FBLoginActivity.this, "Authentication success." + user.getUid(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
