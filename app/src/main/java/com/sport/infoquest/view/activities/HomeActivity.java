@@ -3,6 +3,7 @@ package com.sport.infoquest.view.activities;
 import android.app.ProgressDialog;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.content.res.Configuration;
@@ -29,6 +30,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.internal.ImageRequest;
+import com.facebook.login.widget.ProfilePictureView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,11 +63,13 @@ import com.sport.infoquest.view.activities.fragments.ScanQRFragment;
 import com.sport.infoquest.view.activities.fragments.SelectGameFragment;
 import com.sport.infoquest.view.activities.fragments.StartGameFragment;
 
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -245,20 +255,42 @@ public class HomeActivity extends AppCompatActivity {
     private void updateUI(final Map<String, String> currentUser) {
 
         for (Map.Entry<String, String> entry:currentUser.entrySet()){
-            if (entry.getKey().contains("username")){
+            if (entry.getKey().contains("username")) {
                 userName.setText(entry.getValue());
-                return;
-            }
-            if (entry.getKey().contains("photoUrl")){
-                try {
-                    //Bitmap bitmap = getThumbnail(Uri.parse(entry.getValue()));
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),Uri.parse(entry.getValue()));
-                    image = Utils.getRoundedShape(bitmap, 100);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // return;
             }
         }
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        Bundle params = new Bundle();
+        params.putString("fields", "id,email,picture.type(large)");
+        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        if (response != null) {
+                            try {
+                                JSONObject data = response.getJSONObject();
+                                if (data.has("picture")) {
+                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    URL imageURI = new URL(profilePicUrl);
+                                    Bitmap profilePic = BitmapFactory.decodeStream(imageURI.openConnection().getInputStream());
+                                    image = Utils.getRoundedShape(profilePic, 100);
+                                    userPic.setImageBitmap(image);
+                                    //Bitmap profilePic = BitmapFactory.decodeStream(profilePicUrl.openConnection().getInputStream());
+                                    // set profilePic bitmap to imageview
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).executeAsync();
+    }
     }
 
     public Bitmap getThumbnail(Uri uri) throws IOException {

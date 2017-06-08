@@ -136,10 +136,10 @@ public class FBLoginActivity extends BaseActivity {
                 String facebookUserId = "";
                // fbUser.getProviderData().get().getUid()
 
-                String photoUrl = "https://graph.facebook.com/" + fbUser.getProviderData().get(1).getUid()+ "/picture?height=20";
+       //         String photoUrl = "https://graph.facebook.com/" + fbUser.getProviderData().get(1).getUid()+ "/picture?height=20";
 
                 final User user = Factory.createUser(fbUser);
-                user.setPhotoUrl(Uri.parse(photoUrl));
+              //  user.setPhotoUrl(photoUrl);
                 FirebaseDatabase.getInstance().getReference().child("users").addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -166,7 +166,7 @@ public class FBLoginActivity extends BaseActivity {
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
+                Log.d(TAG, exception.getMessage());
             }
         });
 

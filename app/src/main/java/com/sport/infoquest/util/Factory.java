@@ -89,7 +89,9 @@ public class Factory {
         User newUser = new User();
         newUser.setUid(fbUser.getUid());
         newUser.setEmail(fbUser.getEmail());
-        newUser.setPhotoUrl(fbUser.getPhotoUrl());
+        if (fbUser.getPhotoUrl() != null) {
+            newUser.setPhotoUrl(fbUser.getPhotoUrl().toString());
+        }
         newUser.setCredit("0");
         if  (fbUser.getDisplayName() == null){
             newUser.setUsername(fbUser.getEmail().contains("@")  ? fbUser.getEmail().split("@")[0] : fbUser.getEmail());

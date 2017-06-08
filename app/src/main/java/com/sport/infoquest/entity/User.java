@@ -40,7 +40,7 @@ public class User {
     private String scannedQuestions;
     private String totalQR;
     private String iconId;
-    private Uri photoUrl;
+    private String photoUrl;
     private boolean isOnTrack;
     private Game currentGame;
     private Game selectedGame;
@@ -197,11 +197,11 @@ public class User {
         this.email = email;
     }
 
-    public Uri getPhotoUrl() {
+    public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(Uri photoUrl) {
+    public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
 
