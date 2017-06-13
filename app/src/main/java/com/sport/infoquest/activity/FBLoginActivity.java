@@ -133,30 +133,7 @@ public class FBLoginActivity extends BaseActivity {
                 Toast.makeText(getApplicationContext(), "FB cu success !",
                         Toast.LENGTH_SHORT).show();
                 FirebaseUser fbUser = mAuth.getCurrentUser();
-                String facebookUserId = "";
-               // fbUser.getProviderData().get().getUid()
-
-       //         String photoUrl = "https://graph.facebook.com/" + fbUser.getProviderData().get(1).getUid()+ "/picture?height=20";
-
-                final User user = Factory.createUser(fbUser);
-              //  user.setPhotoUrl(photoUrl);
-                FirebaseDatabase.getInstance().getReference().child("users").addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                DataSnapshot userSnapShot = dataSnapshot.child(user.getUid());
-                                if (userSnapShot.exists()){
-                                    Intent intent = new Intent(getBaseContext(), HomeActivity.class);
-                                    startActivity(intent);
-                                } else {
-                                    FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }});
+                handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
             @Override
@@ -208,12 +185,31 @@ public class FBLoginActivity extends BaseActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser fbUser = mAuth.getCurrentUser();
-                            User user = Factory.createUser(fbUser);
-                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
-                            Intent intent = new Intent(getBaseContext(), HomeActivity.class);
-                            startActivity(intent);
-                            Toast.makeText(FBLoginActivity.this, "Authentication success." + user.getUid(),
-                                    Toast.LENGTH_SHORT).show();
+                            final User user = Factory.createUser(fbUser);
+                            FirebaseDatabase.getInstance().getReference().child("users").addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            DataSnapshot userSnapShot = dataSnapshot.child(user.getUid());
+                                            if (userSnapShot.exists()){
+                                                Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                                                startActivity(intent);
+                                            } else {
+                                                FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
+                                                Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }});
+//                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).setValue(user);
+//                            Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+//                            startActivity(intent);
+//                            Toast.makeText(FBLoginActivity.this, "Authentication success." + user.getUid(),
+//                                    Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
