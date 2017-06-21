@@ -24,12 +24,11 @@ import com.sport.infoquest.entity.CurrentUser;
 import static com.sport.infoquest.enums.Drawer.HOME;
 
 /**
- * Created by Ionut on 18/04/2017.
+ * Created by Ionut Neagu on 21/06/2017.
  */
 
-public class CurrentScoreFragment extends BaseFragment {
-
-    private static final String TAG = "CurrentScoreFragment";
+public class LeaderBoardFragment extends BaseFragment {
+    private static final String TAG = "LeaderBoardFragment";
     private View rootView;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

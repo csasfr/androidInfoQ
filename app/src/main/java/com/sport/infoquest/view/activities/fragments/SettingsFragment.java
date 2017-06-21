@@ -43,7 +43,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rootView = inflater.inflate(R.layout.frame_current_score, container, false);
+        rootView = inflater.inflate(R.layout.fragment_current_score, container, false);
         try {
             Factory.createUser(RestService.getUserInformation(User.getInstance().getUsername()));
         } catch (IOException e) {

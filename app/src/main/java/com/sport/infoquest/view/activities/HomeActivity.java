@@ -261,70 +261,33 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
-        if (SDK_INT > 8)
-        {
+        if (SDK_INT > 8){
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
-        Bundle params = new Bundle();
-        params.putString("fields", "id,email,picture.type(large)");
-        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            try {
-                                JSONObject data = response.getJSONObject();
-                                if (data.has("picture")) {
-                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                    URL imageURI = new URL(profilePicUrl);
-                                    Bitmap profilePic = BitmapFactory.decodeStream(imageURI.openConnection().getInputStream());
-                                    image = Utils.getRoundedShape(profilePic, 100);
-                                    userPic.setImageBitmap(image);
-                                    //Bitmap profilePic = BitmapFactory.decodeStream(profilePicUrl.openConnection().getInputStream());
-                                    // set profilePic bitmap to imageview
+            Bundle params = new Bundle();
+            params.putString("fields", "id,email,picture.type(large)");
+            new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        @Override
+                        public void onCompleted(GraphResponse response) {
+                            if (response != null) {
+                                try {
+                                    JSONObject data = response.getJSONObject();
+                                    if (data.has("picture")) {
+                                        String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
+                                        URL imageURI = new URL(profilePicUrl);
+                                        Bitmap profilePic = BitmapFactory.decodeStream(imageURI.openConnection().getInputStream());
+                                        image = Utils.getRoundedShape(profilePic, 80);
+                                        userPic.setImageBitmap(image);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
                         }
-                    }
-                }).executeAsync();
-    }
-    }
-
-    public Bitmap getThumbnail(Uri uri) throws IOException {
-        InputStream input = this.getContentResolver().openInputStream(uri);
-
-        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
-        onlyBoundsOptions.inJustDecodeBounds = true;
-        onlyBoundsOptions.inDither=true;//optional
-        onlyBoundsOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//optional
-        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
-        input.close();
-
-        if ((onlyBoundsOptions.outWidth == -1) || (onlyBoundsOptions.outHeight == -1)) {
-            return null;
+                    }).executeAsync();
         }
-
-        int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight : onlyBoundsOptions.outWidth;
-
-        double ratio = (originalSize > 300) ? (originalSize / 300) : 1.0;
-
-        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-        bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
-        bitmapOptions.inDither = true; //optional
-        bitmapOptions.inPreferredConfig=Bitmap.Config.ARGB_8888;//
-        input = this.getContentResolver().openInputStream(uri);
-        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
-        input.close();
-        return bitmap;
-    }
-
-    private static int getPowerOfTwoForSampleRatio(double ratio){
-        int k = Integer.highestOneBit((int)Math.floor(ratio));
-        if(k==0) return 1;
-        else return k;
     }
 
     private void initScreen() {
@@ -370,7 +333,8 @@ public class HomeActivity extends AppCompatActivity {
 //                fragment = new Comments();
 //                addFragment(fragment, BUY_COINS.getName());
                 break;
-            case 6: //implement logout from App
+            case 6:
+                FirebaseAuth.getInstance().signOut();
                 finish();
                 break;
         }
