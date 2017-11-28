@@ -31,7 +31,7 @@ public class User {
     private String uid;
     private String username;
     private String email;
-    private String credit;
+    private int credit;
     private String currentTrack;
     private String currentScore;
     private String correctNumber;
@@ -67,11 +67,11 @@ public class User {
         this.username = username;
     }
 
-    public String getCredit() {
+    public int getCredit() {
         return credit;
     }
 
-    public void setCredit(String credit) {
+    public void setCredit(int credit) {
         this.credit = credit;
     }
 

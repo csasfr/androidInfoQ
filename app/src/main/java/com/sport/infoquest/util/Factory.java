@@ -32,7 +32,7 @@ public class Factory {
                 } else if (object.getString("phoneNumber") != null)
                     user.setUsername(object.getString("phoneNumber"));
 
-                user.setCredit(object.getString("credit"));
+                user.setCredit(object.getInt("credit"));
                 user.setCurrentTrack(object.getString("currentTrack"));
                 user.setScannedQuestions(object.getString("scannedQuestions"));
                 user.setCurrentScore(object.getString("currentScore"));
@@ -92,7 +92,7 @@ public class Factory {
         if (fbUser.getPhotoUrl() != null) {
             newUser.setPhotoUrl(fbUser.getPhotoUrl().toString());
         }
-        newUser.setCredit("0");
+        newUser.setCredit(0);
         if  (fbUser.getDisplayName() == null){
             newUser.setUsername(fbUser.getEmail().contains("@")  ? fbUser.getEmail().split("@")[0] : fbUser.getEmail());
         } else {
@@ -107,7 +107,7 @@ public class Factory {
         for (Map.Entry<String, String> entry : entrySet){
            switch (entry.getKey()){
                case "credit":
-                   user.setCredit(entry.getValue());
+                   user.setCredit(Integer.valueOf(entry.getValue()));
                    break;
                case "currentScore":
                    user.setCurrentScore(entry.getValue());
